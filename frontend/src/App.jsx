@@ -184,23 +184,32 @@ function App() {
             Recent Headlines for {selectedTicker}
           </h2>
 
-          {headlines.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                padding: "14px 0",
-                borderBottom: "1px solid #27272a",
-              }}
-            >
-              <p style={{ margin: "0 0 8px 0", fontWeight: "600" }}>
-                {item.headline}
-              </p>
-              <p style={{ margin: 0, color: "#a1a1aa", fontSize: "14px" }}>
-                {item.ticker} • {item.publishedAt} • {item.sentimentLabel} • score:{" "}
-                {item.sentimentScore.toFixed(3)}
-              </p>
-            </div>
-          ))}
+          {/* Scrollable Container*/}
+          <div
+            style={{
+              maxHeight: "400px",
+              overflowY: "auto",
+              paddingRight: "8px",
+            }}
+          >
+            {headlines.map((item) => (
+              <div
+                key={item.id}
+                style={{
+                  padding: "14px 0",
+                  borderBottom: "1px solid #27272a",
+                }}
+              >
+                <p style={{ margin: "0 0 8px 0", fontWeight: "600" }}>
+                  {item.headline}
+                </p>
+                <p style={{ margin: 0, color: "#a1a1aa", fontSize: "14px" }}>
+                  {item.ticker} • {item.publishedAt} • {item.sentimentLabel} • score:{" "}
+                  {item.sentimentScore.toFixed(3)}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
