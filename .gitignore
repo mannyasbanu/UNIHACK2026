@@ -6,7 +6,9 @@ frontend/dist
 backend/venv
 backend/.venv
 backend/__pycache__
-backend/*.pyc
+backend/app/__pycache__
+backend/app/*.pyc
+backend/*.csv
 
 # env files
 .env
