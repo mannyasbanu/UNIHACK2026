@@ -24,7 +24,7 @@ def generate_signals(ticker: str):
 
   # Save headlines before aggregating
   df[["date", "title", "sentiment", "confidence"]].to_csv(
-    "headlines.csv", index=False
+    "csv/headlines.csv", index=False
   )
 
   # 3: Aggregate to daily score
@@ -48,5 +48,5 @@ def generate_signals(ticker: str):
 if __name__ == "__main__":
   result = generate_signals("AAPL") # Generate trading signals for Apple Inc. stock
   print(result) # Print the resulting DataFrame with dates, daily sentiment scores, and trading signals
-  result[0].to_csv("signals.csv", index=False) # Save the resulting DataFrame to a CSV file named 'aapl_signals.csv' without the index
-  print("Signals saved to signals.csv")
+  result[0].to_csv("csv/signals.csv", index=False) # Save the resulting DataFrame to a CSV file named 'aapl_signals.csv' without the index
+  print("Signals saved to csv/signals.csv")

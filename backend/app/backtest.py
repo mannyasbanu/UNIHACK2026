@@ -66,5 +66,5 @@ if __name__ == "__main__":
     for key, value in metrics.items():
         print(f"{key}: {value}")
 
-    backtest_df.to_csv("backtest.csv", index=False)
-    print("\nSaved to backtest.csv")
+    backtest_df.to_csv("csv/backtest.csv", index=False)
+    print("\nSaved to csv/backtest.csv")
