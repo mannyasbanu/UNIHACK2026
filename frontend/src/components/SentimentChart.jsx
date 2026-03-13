@@ -20,13 +20,15 @@ function SentimentChart({ data }) {
         height: "360px",
       }}
     >
-      <h2 style={{ color: 'white', marginTop: 0, marginBottom: "16px" }}>Sentiment Over Time</h2>
+      <h2 style={{ marginTop: 0, marginBottom: "16px", color: "white" }}>
+        Sentiment Over Time
+      </h2>
 
       <ResponsiveContainer width="100%" height="85%">
         <LineChart data={data}>
           <CartesianGrid stroke="#27272a" strokeDasharray="3 3" />
           <XAxis dataKey="date" stroke="#a1a1aa" />
-          <YAxis stroke="#a1a1aa" domain={[-0.5, 0.5]} />
+          <YAxis stroke="#a1a1aa" domain={["auto", "auto"]} />
           <Tooltip />
           <ReferenceLine y={0} stroke="#71717a" />
           <Line
