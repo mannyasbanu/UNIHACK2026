@@ -33,7 +33,7 @@ function App() {
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+      <div style={{ width: "100%", boxSizing: "border-box"}}>
         <h1 style={{ color: 'white', fontSize: "40px", marginBottom: "10px" }}>
           News Sentiment Trading Dashboard
         </h1>
