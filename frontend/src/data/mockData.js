@@ -83,3 +83,33 @@ export const mockMetrics = {
   maxDrawdown: 7.0,
   headlinesAnalysed: 6,
 };
+
+export const mockBacktest = {
+  AAPL: [
+    { date: "2026-03-07", strategyValue: 10000, benchmarkValue: 10000 },
+    { date: "2026-03-08", strategyValue: 10150, benchmarkValue: 10080 },
+    { date: "2026-03-09", strategyValue: 10090, benchmarkValue: 10020 },
+    { date: "2026-03-10", strategyValue: 10320, benchmarkValue: 10170 },
+    { date: "2026-03-11", strategyValue: 10280, benchmarkValue: 10110 },
+    { date: "2026-03-12", strategyValue: 10460, benchmarkValue: 10220 },
+    { date: "2026-03-13", strategyValue: 10800, benchmarkValue: 10400 },
+  ],
+  TSLA: [
+    { date: "2026-03-07", strategyValue: 10000, benchmarkValue: 10000 },
+    { date: "2026-03-08", strategyValue: 9950, benchmarkValue: 9980 },
+    { date: "2026-03-09", strategyValue: 10080, benchmarkValue: 9900 },
+    { date: "2026-03-10", strategyValue: 10110, benchmarkValue: 9850 },
+    { date: "2026-03-11", strategyValue: 10220, benchmarkValue: 9920 },
+    { date: "2026-03-12", strategyValue: 10190, benchmarkValue: 9880 },
+    { date: "2026-03-13", strategyValue: 10340, benchmarkValue: 9810 },
+  ],
+  NVDA: [
+    { date: "2026-03-07", strategyValue: 10000, benchmarkValue: 10000 },
+    { date: "2026-03-08", strategyValue: 10220, benchmarkValue: 10150 },
+    { date: "2026-03-09", strategyValue: 10300, benchmarkValue: 10210 },
+    { date: "2026-03-10", strategyValue: 10580, benchmarkValue: 10410 },
+    { date: "2026-03-11", strategyValue: 10720, benchmarkValue: 10520 },
+    { date: "2026-03-12", strategyValue: 10690, benchmarkValue: 10490 },
+    { date: "2026-03-13", strategyValue: 11050, benchmarkValue: 10700 },
+  ],
+};

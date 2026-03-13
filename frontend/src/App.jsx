@@ -3,16 +3,18 @@ import MetricCard from "./components/MetricCard";
 import SignalBadge from "./components/SignalBadge";
 import TickerSelector from "./components/TickerSelector";
 import SentimentChart from "./components/SentimentChart";
+import BacktestChart from "./components/BacktestChart";
 import {
   mockHeadlines,
   mockSignals,
   mockMetrics,
   mockTickers,
+  mockBacktest,
 } from "./data/mockData";
 
 function App() {
   const [selectedTicker, setSelectedTicker] = useState("AAPL");
-
+  const backtestData = mockBacktest[selectedTicker];
   const filteredSignals = mockSignals.filter(
     (item) => item.ticker === selectedTicker
   );
@@ -82,8 +84,16 @@ function App() {
           />
         </div>
 
-        <div style={{ marginBottom: "32px" }}>
-          <SentimentChart data={filteredSignals} />
+        <div
+          style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+          gap: "20px",
+          marginBottom: "32px",
+        }}
+        >
+        <SentimentChart data={filteredSignals} />
+        <BacktestChart data={backtestData} ticker={selectedTicker} />
         </div>
 
         <div
