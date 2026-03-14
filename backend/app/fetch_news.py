@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+import os
+load_dotenv() # Load environment variables from the .env file in the current directory
+NEWS_API_KEY = os.getenv("NEWS_API_KEY") # Get the NEWS_API_KEY from the environment variables
+
 import yfinance as yf # Yahoo Finance API wrapper to fetch stock data and news
 import pandas as pd
 def fetch_headlines(ticker: str, timeframe: str = "1mo") -> list[dict]:
