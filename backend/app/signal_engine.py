@@ -28,15 +28,19 @@ def generate_signals(ticker: str, timeframe: str = "1mo") -> tuple[pd.DataFrame,
   )
 
   # 3: Aggregate to daily score
+  # df = df[df["score"] != 0.0] # Filter out headlines with neutral sentiment (score of 0) to reduce noise in the signal < CHANGE IF WANT TO BE MORE AGGRESSIVE WITH SIGNALS >
+  
   daily = df.groupby("date")["score"].mean().reset_index() # Group the DataFrame by date and calculate the mean score for each date
+  if daily.empty:
+    return pd.DataFrame(columns=["date", "daily_sentiment", "signal"]), df # If there are no scored headlines, return an empty DataFrame for signals and the original DataFrame for headlines
   daily.columns = ["date", "daily_sentiment"] # Rename the columns to 'date' and 'daily_sentiment'
 
   # 4: Apply signal rules
   # Can adjust these thresholds to be more or less aggressive in generating buy/sell signals
   def get_signal(score: float) -> str:
-    if score > 0.3:
+    if score > 0.1:
       return "buy"
-    elif score < -0.3:
+    elif score < -0.1:
       return "sell"
     else:
       return "hold"

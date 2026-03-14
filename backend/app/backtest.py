@@ -3,8 +3,15 @@ import pandas as pd
 
 def run_backtest(ticker: str, signals_df: pd.DataFrame, timeframe: str = "1mo", initial_capital: float = 10000.0) -> tuple[dict, pd.DataFrame]:
   # 1: Fetch historical price data
+  period_map = {
+    "1d":  "1d",
+    "3d":  "5d",   # yfinance minimum is 5d
+    "1wk": "1wk",
+    "2wk": "1mo",  # yfinance doesn't have 2wk, 1mo is closest
+    "1mo": "1mo",
+  }.get(timeframe, "1mo")
   stock = yf.Ticker(ticker)
-  prices = stock.history(period=timeframe)["Close"].reset_index() # Get the closing prices for the last month and reset the index to have 'Date' as a column
+  prices = stock.history(period=period_map)["Close"].reset_index()
   prices.columns = ["date", "close"] # Rename the columns to 'date' and 'close'
   prices["date"] = pd.to_datetime(prices["date"]).dt.date # Convert the 'date' column to datetime and extract the date
 

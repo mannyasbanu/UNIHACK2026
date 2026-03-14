@@ -19,11 +19,11 @@ function StockPage() {
 
   {/* Timeframe Selection and State */}
   const timeframes = [
+    { label: "1 Day", value: "1d" },
+    { label: "3 Days", value: "3d" },
     { label: "1 Week", value: "1wk" },
+    { label: "2 Weeks", value: "2wk" },
     { label: "1 Month", value: "1mo" },
-    { label: "3 Months", value: "3mo" },
-    { label: "6 Months", value: "6mo" },
-    { label: "1 Year", value: "1y" },
   ];
   const [selectedTimeframe, setSelectedTimeframe] = useState("1mo");
 
