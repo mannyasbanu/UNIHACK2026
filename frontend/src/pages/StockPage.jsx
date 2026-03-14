@@ -1,0 +1,221 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import MetricCard from "../components/MetricCard";
+import SignalBadge from "../components/SignalBadge";
+import SentimentChart from "../components/SentimentChart";
+import BacktestChart from "../components/BacktestChart";
+import Navbar from "../components/Navbar";
+import { getSummary, getSignals, getHeadlines, getBacktest } from "../api";
+
+function StockPage() {
+  const { ticker } = useParams();
+
+  const [summary, setSummary] = useState(null);
+  const [headlines, setHeadlines] = useState([]);
+  const [backtestData, setBacktestData] = useState([]);
+  const [signals, setSignals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const [summaryRes, signalsRes, headlinesRes, backtestRes] =
+          await Promise.all([
+            getSummary(ticker),
+            getSignals(ticker),
+            getHeadlines(ticker),
+            getBacktest(ticker),
+          ]);
+
+        setSummary(summaryRes);
+
+        const transformedSignals = signalsRes.map((item) => ({
+          date: item.date,
+          sentiment: item.daily_sentiment,
+          signal: item.signal,
+        }));
+        setSignals(transformedSignals);
+
+        const transformedHeadlines = headlinesRes.map((item, index) => ({
+          id: `${item.date}-${index}`,
+          ticker,
+          headline: item.title,
+          publishedAt: item.date,
+          sentimentLabel: item.sentiment,
+          sentimentScore: item.score,
+          confidence: item.confidence,
+        }));
+        setHeadlines(transformedHeadlines);
+
+        const transformedBacktest = backtestRes.chart_data.map((item) => ({
+          date: item.date,
+          strategyValue: item.strategy_value,
+          benchmarkValue: item.buyhold_value,
+        }));
+        setBacktestData(transformedBacktest);
+      } catch (err) {
+        setError(err.message || "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [ticker]);
+
+  const latestSignal = signals[signals.length - 1];
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          backgroundColor: "#09090b",
+          color: "white",
+          padding: "20px",
+        }}
+      >
+        <Navbar />
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          backgroundColor: "#09090b",
+          color: "white",
+          padding: "20px",
+        }}
+      >
+        <Navbar />
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#09090b",
+        color: "white",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
+      <Navbar />
+
+      <div style={{ padding: "20px" }}>
+        <h1 style={{ color: "white", fontSize: "40px", marginBottom: "10px" }}>
+          {ticker} Analysis
+        </h1>
+
+        <p style={{ color: "#a1a1aa", fontSize: "18px", marginBottom: "24px" }}>
+          Visualising headlines, sentiment, signals, and backtest performance.
+        </p>
+
+        {latestSignal && (
+          <div style={{ marginBottom: "24px" }}>
+            <SignalBadge signal={latestSignal.signal} />
+          </div>
+        )}
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "16px",
+            marginBottom: "32px",
+          }}
+        >
+          <MetricCard
+            title="Current Signal"
+            value={summary?.latest_signal?.toUpperCase() || "N/A"}
+            subtitle={`${ticker} latest model output`}
+          />
+          <MetricCard
+            title="Latest Sentiment"
+            value={summary ? summary.latest_sentiment.toFixed(2) : "N/A"}
+            subtitle="Most recent daily sentiment"
+          />
+          <MetricCard
+            title="Strategy Return"
+            value={summary ? `${summary.strategy_return.toFixed(2)}%` : "N/A"}
+            subtitle="Backtest performance"
+          />
+          <MetricCard
+            title="Buy & Hold Return"
+            value={summary ? `${summary.buyhold_return.toFixed(2)}%` : "N/A"}
+            subtitle="Benchmark return"
+          />
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: "20px",
+            marginBottom: "32px",
+          }}
+        >
+          <SentimentChart data={signals} />
+          <BacktestChart data={backtestData} ticker={ticker} />
+        </div>
+
+        <div
+          style={{
+            backgroundColor: "#18181b",
+            border: "1px solid #27272a",
+            borderRadius: "16px",
+            padding: "20px",
+          }}
+        >
+          <h2 style={{ color: "white", marginTop: 0, marginBottom: "16px" }}>
+            Recent Headlines for {ticker}
+          </h2>
+
+          <div
+            style={{
+              maxHeight: "400px",
+              overflowY: "auto",
+              paddingRight: "8px",
+            }}
+          >
+            {headlines.length === 0 ? (
+              <p style={{ color: "#a1a1aa" }}>No recent headlines found.</p>
+            ) : (
+              headlines.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    padding: "14px 0",
+                    borderBottom: "1px solid #27272a",
+                  }}
+                >
+                  <p style={{ margin: "0 0 8px 0", fontWeight: "600" }}>
+                    {item.headline}
+                  </p>
+                  <p style={{ margin: 0, color: "#a1a1aa", fontSize: "14px" }}>
+                    {item.ticker} • {item.publishedAt} • {item.sentimentLabel} • score:{" "}
+                    {typeof item.sentimentScore === "number"
+                      ? item.sentimentScore.toFixed(3)
+                      : "N/A"}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default StockPage;
