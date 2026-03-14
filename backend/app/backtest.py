@@ -1,10 +1,10 @@
 import yfinance as yf
 import pandas as pd
 
-def run_backtest(ticker: str, signals_df: pd.DataFrame, initial_capital: float = 10000.0) -> tuple[dict, pd.DataFrame]:
+def run_backtest(ticker: str, signals_df: pd.DataFrame, timeframe: str = "1mo", initial_capital: float = 10000.0) -> tuple[dict, pd.DataFrame]:
   # 1: Fetch historical price data
   stock = yf.Ticker(ticker)
-  prices = stock.history(period="3mo")["Close"].reset_index() # Get the closing prices for the last month and reset the index to have 'Date' as a column
+  prices = stock.history(period=timeframe)["Close"].reset_index() # Get the closing prices for the last month and reset the index to have 'Date' as a column
   prices.columns = ["date", "close"] # Rename the columns to 'date' and 'close'
   prices["date"] = pd.to_datetime(prices["date"]).dt.date # Convert the 'date' column to datetime and extract the date
 

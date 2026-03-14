@@ -10,7 +10,7 @@ def sentiment_to_score(label: str, confidence: float) -> float:
   else:
     return 0.0
   
-def generate_signals(ticker: str):
+def generate_signals(ticker: str, timeframe: str = "1mo") -> tuple[pd.DataFrame, pd.DataFrame]:
   # 1: Fetch and score healdines
   headlines = fetch_headlines(ticker) # Fetch news headlines for the given stock ticker
   scored = score_headlines(headlines) # Analyze the sentiment of each headline and add 'sentiment' and 'confidence' to each headline dict
