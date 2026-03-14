@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const { user, authLoading, signOut } = useAuth();
 
   function handleSearch(e) {
     e.preventDefault();
@@ -12,6 +14,11 @@ function Navbar() {
 
     navigate(`/stock/${search.trim().toUpperCase()}`);
     setSearch("");
+  }
+
+  async function handleLogout() {
+    await signOut();
+    navigate("/");
   }
 
   return (
@@ -81,31 +88,57 @@ function Navbar() {
         </button>
       </form>
 
-      <div style={{ display: "flex", gap: "12px" }}>
-        <Link
-          to="/login"
-          style={{
-            color: "#d4d4d8",
-            textDecoration: "none",
-            padding: "10px 14px",
-          }}
-        >
-          Login
-        </Link>
+      <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        {authLoading ? (
+          <span style={{ color: "#a1a1aa" }}>Loading...</span>
+        ) : user ? (
+          <>
+            <span style={{ color: "#d4d4d8", fontSize: "14px" }}>
+              {user.email}
+            </span>
+            <button
+              onClick={handleLogout}
+              style={{
+                backgroundColor: "white",
+                color: "#09090b",
+                border: "none",
+                borderRadius: "10px",
+                padding: "10px 14px",
+                fontWeight: "600",
+                cursor: "pointer",
+              }}
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link
+              to="/login"
+              style={{
+                color: "#d4d4d8",
+                textDecoration: "none",
+                padding: "10px 14px",
+              }}
+            >
+              Login
+            </Link>
 
-        <Link
-          to="/signup"
-          style={{
-            backgroundColor: "white",
-            color: "#09090b",
-            textDecoration: "none",
-            padding: "10px 14px",
-            borderRadius: "10px",
-            fontWeight: "600",
-          }}
-        >
-          Get Started
-        </Link>
+            <Link
+              to="/signup"
+              style={{
+                backgroundColor: "white",
+                color: "#09090b",
+                textDecoration: "none",
+                padding: "10px 14px",
+                borderRadius: "10px",
+                fontWeight: "600",
+              }}
+            >
+              Get Started
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );
