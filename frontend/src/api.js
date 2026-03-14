@@ -26,3 +26,8 @@ export async function getBacktest(ticker, timeframe) {
   if (!res.ok) throw new Error("Failed to fetch backtest");
   return res.json();
 }
+
+export async function getMovers(tickers = "AAPL,TSLA,NVDA,MSFT") {
+    const res = await fetch(`${BASE_URL}/api/movers?tickers=${tickers}`)
+    return res.json()
+}

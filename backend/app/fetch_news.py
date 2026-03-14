@@ -101,3 +101,35 @@ def fetch_headlines(ticker: str, timeframe: str = "1mo") -> list[dict]:
     print(f"Fetched {len(newsapi_articles)} NewsAPI + {len(yfinance_articles)} yfinance = {len(unique)} unique articles")
 
     return unique
+
+## Fetch stock price movers for a list of tickers
+def fetch_movers(tickers: list[str]) -> list[dict]:
+    name_map = {
+        "AAPL": "Apple",
+        "TSLA": "Tesla",
+        "NVDA": "NVIDIA",
+        "MSFT": "Microsoft",
+    }
+
+    results = []
+    for ticker in tickers:
+        try:
+            stock = yf.Ticker(ticker)
+            info = stock.fast_info
+
+            current_price = round(float(info.last_price), 2)
+            prev_close = round(float(info.previous_close), 2)
+            change_pct = ((current_price - prev_close) / prev_close) * 100
+            change_str = f"+{change_pct:.2f}%" if change_pct >= 0 else f"{change_pct:.2f}%"
+
+            results.append({
+                "ticker": ticker,
+                "name": name_map.get(ticker, ticker),
+                "price": current_price,
+                "change": change_str,
+            })
+        except Exception as e:
+            print(f"Error fetching mover data for {ticker}: {e}")
+            continue
+
+    return results

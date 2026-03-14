@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware # Middleware for handling Cro
 from signal_engine import generate_signals # Import the generate_signals function from the signal_engine module
 from backtest import run_backtest # Import the run_backtest function from the backtest module
 import pandas as pd # Pandas library for data manipulation and analysis
+from fetch_news import fetch_headlines, fetch_movers # Import the fetch_headlines and fetch_movers functions from the fetch_news module
 
 app = FastAPI() # Create a FastAPI application instance
 
@@ -95,3 +96,17 @@ def get_summary(ticker: str, timeframe: str = "1mo"): # Define the get_summary f
     return result
   except Exception as e:
     raise HTTPException(status_code=500, detail=str(e)) # If there's an error, return a 500 Internal Server Error with the error message
+
+@app.get("/api/movers")
+def get_movers(tickers: str = "AAPL,TSLA,NVDA,MSFT"):
+    try:
+        cache_key = f"movers_{tickers}"
+        if cache_key in cache:
+            return cache[cache_key]
+
+        ticker_list = [t.strip().upper() for t in tickers.split(",")]
+        result = fetch_movers(ticker_list)
+        cache[cache_key] = result
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
