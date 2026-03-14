@@ -6,5 +6,5 @@ def score_headlines(headlines: list[dict]) -> list[dict]:
     for h in headlines:
         result = sentiment_model(h["title"])[0] # Analyze the sentiment of the headline title and get the result as a dict with 'label' and 'score'
         h["sentiment"] = result["label"] # Add the sentiment label (e.g., 'positive', 'negative', 'neutral') to the headline dict
-        h["confidence"] = result["score"] #
+        h["confidence"] = result["score"]
     return headlines

@@ -30,6 +30,16 @@ function StockPage() {
   const [savingFavorite, setSavingFavorite] = useState(false);
   const [error, setError] = useState("");
 
+  {/* Timeframe Selection and State */}
+  const timeframes = [
+    { label: "1 Day", value: "1d" },
+    { label: "3 Days", value: "3d" },
+    { label: "1 Week", value: "1wk" },
+    { label: "2 Weeks", value: "2wk" },
+    { label: "1 Month", value: "1mo" },
+  ];
+  const [selectedTimeframe, setSelectedTimeframe] = useState("1mo");
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -38,10 +48,10 @@ function StockPage() {
 
         const [summaryRes, signalsRes, headlinesRes, backtestRes] =
           await Promise.all([
-            getSummary(ticker),
-            getSignals(ticker),
-            getHeadlines(ticker),
-            getBacktest(ticker),
+            getSummary(ticker, selectedTimeframe),
+            getSignals(ticker, selectedTimeframe),
+            getHeadlines(ticker, selectedTimeframe),
+            getBacktest(ticker, selectedTimeframe),
           ]);
 
         setSummary(summaryRes);
@@ -93,7 +103,7 @@ function StockPage() {
     }
 
     loadData();
-  }, [ticker, user]);
+  }, [ticker, user, selectedTimeframe]);
 
   async function handleFavoriteToggle() {
     if (!user) {
@@ -219,6 +229,28 @@ function StockPage() {
           <p style={{ color: "#a1a1aa", fontSize: "18px", marginBottom: "24px" }}>
             Visualising headlines, sentiment, signals, and backtest performance.
           </p>
+
+        {/* Timeframe Selector */}
+        <select
+          value={selectedTimeframe}
+          onChange={(e) => setSelectedTimeframe(e.target.value)}
+          style={{
+            backgroundColor: "#18181b",
+            color: "white",
+            border: "1px solid #27272a",
+            borderRadius: "8px",
+            padding: "8px 12px",
+            fontSize: "14px",
+            marginBottom: "24px",
+            cursor: "pointer",
+          }}
+        >
+          {timeframes.map((t) => (
+            <option key={t.value} value={t.value}>
+              {t.label}
+            </option>
+          ))}
+        </select>
 
           {latestSignal && (
             <div style={{ marginBottom: "24px" }}>
