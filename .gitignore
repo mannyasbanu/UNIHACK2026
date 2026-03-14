@@ -11,6 +11,7 @@ backend/app/__pycache__
 backend/app/*.pyc
 backend/*.csv
 backend/csv/*.csv
+backend/app/csv/*.csv
 
 # env files
 .env
