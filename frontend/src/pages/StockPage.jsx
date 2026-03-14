@@ -29,6 +29,7 @@ function StockPage() {
   const [loading, setLoading] = useState(true);
   const [savingFavorite, setSavingFavorite] = useState(false);
   const [error, setError] = useState("");
+  const [sortBy, setSortBy] = useState("date");
 
   {/* Timeframe Selection and State */}
   const timeframes = [
@@ -126,6 +127,23 @@ function StockPage() {
 
   const latestSignal = signals[signals.length - 1];
   const isFavorite = favorites.includes(ticker);
+
+  {/* Headline Sorting */}
+  const sortedHeadlines = [...headlines].sort((a, b) => {
+    if (sortBy === "date") {
+      return new Date(b.publishedAt) - new Date(a.publishedAt);
+    }
+    if (sortBy === "confidence") {
+      return Math.abs(b.sentimentScore) - Math.abs(a.sentimentScore);
+    }
+    if (sortBy === "positive") {
+      return b.sentimentScore - a.sentimentScore; // highest positive first
+    }
+    if (sortBy === "negative") {
+      return a.sentimentScore - b.sentimentScore; // most negative first
+    }
+    return 0;
+  });
 
   if (loading) {
     return (
@@ -300,6 +318,7 @@ function StockPage() {
             <BacktestChart data={backtestData} ticker={ticker} />
           </div>
 
+          {/* Headlines Section */}
           <div
             style={{
               backgroundColor: "#18181b",
@@ -308,13 +327,33 @@ function StockPage() {
               padding: "20px",
             }}
           >
-            <h2 style={{ color: "white", marginTop: 0, marginBottom: "16px" }}>
-              Recent Headlines for {ticker}
-            </h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h2 style={{ color: "white", margin: 0 }}>
+                Recent Headlines for {ticker}
+              </h2>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                style={{
+                  backgroundColor: "#27272a",
+                  color: "white",
+                  border: "1px solid #3f3f46",
+                  borderRadius: "8px",
+                  padding: "6px 10px",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                }}
+              >
+                <option value="date">Sort: Date</option>
+                <option value="confidence">Sort: Importance</option>
+                <option value="positive">Sort: Most Positive</option>
+                <option value="negative">Sort: Most Negative</option>
+              </select>
+            </div>
 
             <div
               style={{
-                maxHeight: "400px",
+                maxHeight: "550px",
                 overflowY: "auto",
                 paddingRight: "8px",
               }}
@@ -322,25 +361,61 @@ function StockPage() {
               {headlines.length === 0 ? (
                 <p style={{ color: "#a1a1aa" }}>No recent headlines found.</p>
               ) : (
-                headlines.map((item) => (
-                  <div
-                    key={item.id}
-                    style={{
-                      padding: "14px 0",
-                      borderBottom: "1px solid #27272a",
-                    }}
-                  >
-                    <p style={{ margin: "0 0 8px 0", fontWeight: "600" }}>
-                      {item.headline}
-                    </p>
-                    <p style={{ margin: 0, color: "#a1a1aa", fontSize: "14px" }}>
-                      {item.ticker} • {item.publishedAt} • {item.sentimentLabel} • score:{" "}
-                      {typeof item.sentimentScore === "number"
-                        ? item.sentimentScore.toFixed(3)
-                        : "N/A"}
-                    </p>
-                  </div>
-                ))
+                sortedHeadlines.map((item) => {
+                  const sentimentColor =
+                    item.sentimentLabel === "positive" ? "#4ade80" :
+                    item.sentimentLabel === "negative" ? "#f87171" :
+                    "#a1a1aa";
+
+                  const sentimentBg =
+                    item.sentimentLabel === "positive" ? "rgba(74, 222, 128, 0.08)" :
+                    item.sentimentLabel === "negative" ? "rgba(248, 113, 113, 0.08)" :
+                    "rgba(161, 161, 170, 0.08)";
+
+                  return (
+                    <div
+                      key={item.id}
+                      style={{
+                        padding: "16px",
+                        marginBottom: "10px",
+                        borderRadius: "12px",
+                        backgroundColor: sentimentBg,
+                        border: `1px solid ${sentimentColor}30`,
+                      }}
+                    >
+                      {/* Sentiment badge */}
+                      <span
+                        style={{
+                          display: "inline-block",
+                          backgroundColor: sentimentColor,
+                          color: "#09090b",
+                          fontSize: "11px",
+                          fontWeight: "700",
+                          padding: "2px 8px",
+                          borderRadius: "999px",
+                          marginBottom: "8px",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {item.sentimentLabel}
+                      </span>
+
+                      {/* Headline */}
+                      <p style={{ margin: "0 0 8px 0", fontWeight: "600", lineHeight: "1.4" }}>
+                        {item.headline}
+                      </p>
+
+                      {/* Metadata row */}
+                      <p style={{ margin: 0, color: "#a1a1aa", fontSize: "13px", display: "flex", gap: "12px" }}>
+                        <span>{item.publishedAt}</span>
+                        <span>Confidence: {(item.confidence * 100).toFixed(0)}%</span>
+                        <span style={{ color: sentimentColor }}>
+                          Score: {typeof item.sentimentScore === "number" ? item.sentimentScore.toFixed(3) : "N/A"}
+                        </span>
+                      </p>
+                    </div>
+                  );
+                })
               )}
             </div>
           </div>
